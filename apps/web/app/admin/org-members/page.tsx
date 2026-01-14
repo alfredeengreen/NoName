@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from '@/lib/toast';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
@@ -45,7 +45,7 @@ interface Member {
   createdAt: string;
 }
 
-export default function OrgMembersPage() {
+function OrgMembersContent() {
   const searchParams = useSearchParams();
   const orgId = searchParams.get('orgId') || '';
   const [members, setMembers] = useState<Member[]>([]);
@@ -54,7 +54,7 @@ export default function OrgMembersPage() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('viewer');
 
-  useEffect(() => {
+  const fetchMembers = useCallback(async () => {
     fetchMembers();
   }, [orgId]);
 
@@ -70,7 +70,11 @@ export default function OrgMembersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -256,6 +260,7 @@ export default function OrgMembersPage() {
     </SidebarProvider>
   );
 }
+
 
 export default function OrgMembersPage() {
   return (
