@@ -129,7 +129,7 @@ export async function processProblemIntegrations(
           result = { success: true };
           break;
 
-        case 'webhook':
+        case 'webhook': {
           // Generic webhook
           const webhookResponse = await fetch((integration.config as any).url, {
             method: 'POST',
@@ -155,6 +155,7 @@ export async function processProblemIntegrations(
           });
           result = { success: webhookResponse.ok };
           break;
+        }
 
         default:
           continue;
