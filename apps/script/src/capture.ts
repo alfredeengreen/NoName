@@ -64,11 +64,11 @@ export const capture = {
           }
         } else if (label) {
           // Fallback: if we have label but no elementId, still track for backward compatibility
-          debugWarn('Click without elementId (fallback):', { label });
+          // Click without elementId
           const eventKey = buildEventKey('click', label);
           batch.increment(eventKey);
         } else {
-          debugWarn('Click without elementId or label:', {
+          // Click without elementId or label
             element: target.tagName,
             className: target.className,
           });

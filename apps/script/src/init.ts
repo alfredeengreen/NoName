@@ -132,7 +132,7 @@ export function init(config: InitConfig) {
   // Send initial pageview
   capture.sendPageview();
   
-  debugLog('Initialized', { siteId: config.siteId, vid, sid: session.sid });
+  // Initialized
 }
 
 interface Session {

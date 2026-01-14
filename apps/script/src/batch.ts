@@ -1,6 +1,6 @@
 import { getDeviceInfo } from './device';
 import { getUserDimensions, getSessionDimensions } from './dimensions';
-import { setDebug, debugLog, debugWarn, debugError } from './debug';
+import { setDebug } from './debug';
 
 interface BatchConfig {
   siteId: string;
@@ -64,19 +64,8 @@ export const batch = {
   },
 
   sendEvent(name: string, props?: Record<string, unknown>, eventDimensions?: Record<string, unknown>) {
-    if (!config) {
-      debugWarn('Cannot send event, not initialized:', name);
-      return;
-    }
-
-    const payload = buildEventPayload(name, props, eventDimensions);
-    debugLog('Sending event payload:', {
-      type: 'event',
-      name,
-      props,
-      hasElementId: !!(props && props.elementId),
-    });
-    sendPayload(payload);
+    if (!config) return;
+    sendPayload(buildEventPayload(name, props, eventDimensions));
   },
 };
 
@@ -206,7 +195,7 @@ function saveQueue(queue: QueuedPayload[]) {
     
     localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
   } catch (error) {
-      debugWarn('Failed to save queue:', error);
+      // Failed to save queue
     // If storage is full, try to clear some space
     try {
       const reduced = queue.slice(-100); // Keep last 100
@@ -268,7 +257,7 @@ async function flushQueue() {
       }
     } catch (error) {
       // Network error, keep in queue with backoff
-      debugWarn('Queue send failed:', error);
+      // Queue send failed
       break;
     }
   }
@@ -278,7 +267,7 @@ async function flushQueue() {
     const remaining = itemsToSend.filter((_, idx) => !successItems.includes(idx));
     saveQueue(remaining);
     
-    debugLog(`Flushed ${successItems.length} items from queue, ${remaining.length} remaining`);
+    // Flushed items from queue
   }
 
   // Schedule retry with exponential backoff if items remain
@@ -290,7 +279,7 @@ async function flushQueue() {
 
 function sendPayload(payload: unknown) {
   if (!config) {
-    debugWarn('Cannot send payload, not initialized');
+    // Not initialized
     return;
   }
 
@@ -305,7 +294,7 @@ function sendPayload(payload: unknown) {
     const blob = new Blob([body], { type: 'application/json' });
     const sent = navigator.sendBeacon(url, blob);
     if (sent) {
-      debugLog('✅ Event sent via sendBeacon:', {
+      // Event sent via sendBeacon
         type: (payload as any).type,
         name: (payload as any).name,
         hasProps: !!(payload as any).props,
@@ -330,7 +319,7 @@ function sendPayload(payload: unknown) {
       keepalive: true,
       credentials: 'omit',
     }).then(() => {
-      debugLog('✅ Event sent via fetch:', {
+      // Event sent via fetch
         type: (payload as any).type,
         name: (payload as any).name,
         hasProps: !!(payload as any).props,
