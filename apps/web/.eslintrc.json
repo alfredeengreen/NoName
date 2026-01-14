@@ -2,7 +2,8 @@
   "extends": ["next/core-web-vitals"],
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "no-undef": "off"
+    "no-undef": "off",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "env": {
     "browser": true,
