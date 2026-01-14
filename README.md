@@ -330,19 +330,6 @@ We welcome contributions from the community. Please see [CONTRIBUTING.md](CONTRI
 - **Issues**: Report bugs or request features on GitHub
 - **Community**: Join discussions and get help from other users
 
-## Credits
-
-No Name Analytics is built with open source technologies. Special thanks to:
-
-- The Next.js team for the excellent React framework
-- The Fastify team for the high-performance web framework
-- The Drizzle ORM team for type-safe database operations
-- The Radix UI team for accessible component primitives
-- The Recharts team for beautirful data visualizations
-- The PostgreSQL and Redis communities for robust data storage solutions
-- All contributors and open source maintainers who make this project possible
-
-
 ## License and Usage
 
 No Name Analytics uses a dual-license model.
