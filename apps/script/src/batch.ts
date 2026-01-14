@@ -294,12 +294,6 @@ function sendPayload(payload: unknown) {
     const blob = new Blob([body], { type: 'application/json' });
     const sent = navigator.sendBeacon(url, blob);
     if (sent) {
-      // Event sent via sendBeacon
-        type: (payload as any).type,
-        name: (payload as any).name,
-        hasProps: !!(payload as any).props,
-        elementId: (payload as any).props?.elementId,
-      });
       // Flush queue on successful send
       flushQueue();
     } else {
