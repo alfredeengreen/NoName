@@ -634,7 +634,6 @@ function setupCustomEventTrackers() {
           }
         } catch (err) {
           // Invalid selector, skip
-          // Invalid selector
         }
       }
     },
