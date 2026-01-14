@@ -1,0 +1,30 @@
+{
+  "name": "analytics-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Privacy-first analytics MVP - open source self-hosted analytics",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "migrate": "cd packages/db && pnpm drizzle-kit migrate",
+    "migrate:run": "psql \"${DATABASE_URL:-postgresql://analytics:analytics@localhost:5432/analytics}\" -f packages/db/src/migrations/0000_initial.sql",
+    "size": "cd apps/script && pnpm size",
+    "clean": "turbo clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "@types/node": "^20.10.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
+

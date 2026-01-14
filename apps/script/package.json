@@ -1,0 +1,14 @@
+{
+  "name": "@analytics/script",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node esbuild.config.js",
+    "size": "node scripts/size-check.js",
+    "dev": "node esbuild.config.js --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.8"
+  }
+}
+
+

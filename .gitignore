@@ -1,0 +1,80 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Testing
+coverage/
+*.lcov
+
+# Production
+dist/
+build/
+.next/
+out/
+
+# Misc
+.DS_Store
+*.pem
+.env
+.env*.local
+.env.production
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Turbo
+.turbo/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+
+# Internal/AI files
+IMPLEMENTATION_SUMMARY.md
+DEPLOYMENT_STATUS.md
+*.plan.md
+.cursor/
+.cursorrules
+.cursor/
+
+# Sensitive deployment and configuration files
+DEPLOY_NOW.md
+DOMAIN_CONFIGURATION.md
+README_PRODUCTION.md
+SECURITY.md
+SECURITY_CHECKLIST.md
+SSL_SETUP.md
+REVERSE_PROXY_SETUP.md
+DEPLOYMENT.md
+DEPLOY_MIGRATE.md
+DEPLOY_MARKETING.md
+DEBUG_*.md
+DEBUG_*.html
+QUICK_FIX_*.md
+TESTING_SUMMARY.md
+ROUTE_TESTING_SUMMARY.md
+MARKETING_FEATURES.md
+
+# Deployment scripts with credentials - must use environment variables
+deploy-production.sh
+deploy-marketing.sh
+deploy-marketing-auto.sh
+deploy-marketing-simple.sh
+deploy-and-migrate.sh
+scripts/deploy.sh
+scripts/deploy-direct.sh
+scripts/deploy-manual.sh
+scripts/deploy-with-migrations.sh
+scripts/comprehensive-test.sh
+scripts/test-routes.sh

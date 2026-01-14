@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# Production deployment script
+# Copy this file to deploy-production.sh and set environment variables
+# DO NOT commit deploy-production.sh with credentials
+
+set -e
+
+# Configuration - set these as environment variables or in a .env file
+SERVER="${DEPLOY_SERVER:-}"
+SSH_PASSWORD="${DEPLOY_SSH_PASSWORD:-}"
+DEPLOY_PATH="${DEPLOY_PATH:-/opt/analytics}"
+
+if [ -z "$SERVER" ] || [ -z "$SSH_PASSWORD" ]; then
+  echo "ERROR: DEPLOY_SERVER and DEPLOY_SSH_PASSWORD must be set"
+  echo "Example:"
+  echo "  export DEPLOY_SERVER=user@host"
+  echo "  export DEPLOY_SSH_PASSWORD=password"
+  echo "  ./deploy-production.sh"
+  exit 1
+fi
+
+# Use sshpass if available
+if ! command -v sshpass &> /dev/null; then
+  echo "Installing sshpass..."
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install hudochenkov/sshpass/sshpass || echo "Please install sshpass: brew install hudochenkov/sshpass/sshpass"
+  else
+    sudo apt-get update && sudo apt-get install -y sshpass
+  fi
+fi
+
+export SSHPASS="$SSH_PASSWORD"
+
+# Step 1: Sync code to server
+echo "Syncing code to server..."
+rsync -avz --delete \
+  --exclude 'node_modules' \
+  --exclude '.next' \
+  --exclude 'dist' \
+  --exclude '.git' \
+  --exclude '.env*' \
+  -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
+  ./ "$SERVER:$DEPLOY_PATH/"
+
+# Step 2: Determine docker compose command
+if docker compose version &> /dev/null; then
+  DOCKER_COMPOSE="docker compose"
+elif docker-compose version &> /dev/null; then
+  DOCKER_COMPOSE="docker-compose"
+else
+  echo "ERROR: Neither 'docker compose' nor 'docker-compose' found"
+  exit 1
+fi
+
+echo "Using: $DOCKER_COMPOSE"
+
+# Step 3: Run database migrations
+echo "Running database migrations..."
+
+# Check if we need to run initial migration
+MIGRATION_CHECK=$(sshpass -e ssh -o StrictHostKeyChecking=no "$SERVER" "$DOCKER_COMPOSE -f $DEPLOY_PATH/docker-compose.prod.yml exec -T postgres psql -U analytics -d analytics -tAc \"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites');\"" 2>/dev/null || echo "false")
+
+if [ "$MIGRATION_CHECK" != "t" ]; then
+  echo "Running initial migration..."
+  if sshpass -e ssh -o StrictHostKeyChecking=no "$SERVER" "test -f $DEPLOY_PATH/packages/db/src/migrations/0000_initial.sql"; then
+    sshpass -e ssh -o StrictHostKeyChecking=no "$SERVER" "$DOCKER_COMPOSE -f $DEPLOY_PATH/docker-compose.prod.yml exec -T postgres psql -U analytics -d analytics < $DEPLOY_PATH/packages/db/src/migrations/0000_initial.sql" || true
+  fi
+fi
+
+# Run all other migrations in order
+for migration in packages/db/src/migrations/*.sql; do
+  if [ -f "$migration" ]; then
+    migration_name=$(basename "$migration")
+    echo "Checking migration: $migration_name"
+    
+    # Try to apply migration (will fail gracefully if already applied)
+    sshpass -e ssh -o StrictHostKeyChecking=no "$SERVER" "$DOCKER_COMPOSE -f $DEPLOY_PATH/docker-compose.prod.yml exec -T postgres psql -U analytics -d analytics -f $DEPLOY_PATH/$migration" 2>&1 | grep -v "already exists" || true
+  fi
+done
+
+# Step 4: Rebuild and restart services
+echo "Rebuilding and restarting services..."
+sshpass -e ssh -o StrictHostKeyChecking=no "$SERVER" << ENDSSH
+cd $DEPLOY_PATH
+$DOCKER_COMPOSE -f docker-compose.prod.yml build --no-cache
+$DOCKER_COMPOSE -f docker-compose.prod.yml up -d
+ENDSSH
+
+echo ""
+echo "Deployment finished!"
+echo ""
+echo "Services should be available at:"
+echo "  - Web Dashboard: http://\${DEPLOY_SERVER#*@}:3000"
+echo "  - Collector API: http://\${DEPLOY_SERVER#*@}:3001"
+echo "  - Health Check: http://\${DEPLOY_SERVER#*@}:3001/health"
+echo ""
+echo "To view logs:"
+echo "  ssh $SERVER 'cd $DEPLOY_PATH && $DOCKER_COMPOSE -f docker-compose.prod.yml logs -f'"
