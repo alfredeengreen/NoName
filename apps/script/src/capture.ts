@@ -6,7 +6,6 @@ import { setupHeatmapTracking } from './heatmap';
 import { setupFormAnalytics } from './formAnalytics';
 import { setupFrustrationTracking } from './frustration';
 import { setupSessionReplay } from './replay';
-import { debugLog, debugWarn } from './debug';
 
 let lastPageviewTime = 0;
 const PAGEVIEW_DEBOUNCE_MS = 500;
