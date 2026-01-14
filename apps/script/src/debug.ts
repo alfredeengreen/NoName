@@ -9,19 +9,13 @@ export function setDebug(enabled: boolean) {
 }
 
 export function debugLog(...args: any[]) {
-  if (debugEnabled) {
-    console.log('[No Name Analytics]', ...args);
-  }
+  if (debugEnabled) console.log(...args);
 }
 
 export function debugWarn(...args: any[]) {
-  if (debugEnabled) {
-    console.warn('[No Name Analytics]', ...args);
-  }
+  if (debugEnabled) console.warn(...args);
 }
 
 export function debugError(...args: any[]) {
-  if (debugEnabled) {
-    console.error('[No Name Analytics]', ...args);
-  }
+  if (debugEnabled) console.error(...args);
 }

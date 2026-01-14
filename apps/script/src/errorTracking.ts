@@ -330,10 +330,10 @@ function setupResourceErrorTracking() {
 
 // Track console errors
 function setupConsoleErrorTracking() {
-  const originalConsoleError = console.error;
-  const originalConsoleWarn = console.warn;
+  const origErr = console.error;
+  const origWarn = console.warn;
   
-  console.error = function(...args: any[]) {
+  console.error = function(...a: any[]) {
     addBreadcrumb({
       type: 'console',
       message: args.map(a => String(a)).join(' '),
@@ -342,7 +342,7 @@ function setupConsoleErrorTracking() {
     return originalConsoleError.apply(console, args);
   };
   
-  console.warn = function(...args: any[]) {
+  console.warn = function(...a: any[]) {
     addBreadcrumb({
       type: 'console',
       message: args.map(a => String(a)).join(' '),
