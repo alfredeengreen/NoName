@@ -66,11 +66,6 @@ export const capture = {
           // Click without elementId
           const eventKey = buildEventKey('click', label);
           batch.increment(eventKey);
-        } else {
-          // Click without elementId or label
-            element: target.tagName,
-            className: target.className,
-          });
         }
       },
       true // capture phase

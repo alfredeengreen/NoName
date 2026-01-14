@@ -1,7 +1,7 @@
 import { capture } from './capture';
 import { batch } from './batch';
 import { getDeviceInfo } from './device';
-import { setDebug, debugLog } from './debug';
+import { setDebug } from './debug';
 
 interface InitConfig {
   siteId: string;
