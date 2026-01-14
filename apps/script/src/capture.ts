@@ -639,7 +639,7 @@ function setupCustomEventTrackers() {
           }
         } catch (err) {
           // Invalid selector, skip
-          debugWarn('Invalid CSS selector:', tracker.cssSelector);
+          // Invalid selector
         }
       }
     },

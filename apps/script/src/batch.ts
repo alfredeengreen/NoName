@@ -305,7 +305,7 @@ function sendPayload(payload: unknown) {
     } else {
       // sendBeacon failed, add to queue
       addToQueue(payload);
-      debugWarn('❌ sendBeacon failed, payload queued');
+      // sendBeacon failed
     }
   } else {
     fetch(url, {
@@ -319,18 +319,11 @@ function sendPayload(payload: unknown) {
       keepalive: true,
       credentials: 'omit',
     }).then(() => {
-      // Event sent via fetch
-        type: (payload as any).type,
-        name: (payload as any).name,
-        hasProps: !!(payload as any).props,
-        elementId: (payload as any).props?.elementId,
-      });
       // Flush queue on successful send
       flushQueue();
-    }).catch((err) => {
+    }).catch(() => {
       // Network error, add to queue
       addToQueue(payload);
-      debugError('❌ Failed to send event:', err);
     });
   }
 }
