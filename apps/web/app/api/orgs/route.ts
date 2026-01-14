@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { getCurrentUser, getUserOrgs } from '@/lib/auth-helpers';
 
 export async function GET() {

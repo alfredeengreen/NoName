@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { getPool } from '@analytics/db';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Check if user is admin/owner of any org
  */

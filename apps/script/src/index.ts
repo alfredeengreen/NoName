@@ -36,7 +36,7 @@ if (typeof window !== 'undefined') {
     };
     (window as any).aa.dimensions = dimensions;
   } catch (e) {
-    console.error('No Name Analytics: Failed to set up methods', e);
+    // Silently fail in production
   }
 }
 

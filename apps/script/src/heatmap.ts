@@ -129,7 +129,7 @@ async function captureScreenshot(): Promise<string | null> {
     
     return null;
   } catch (error) {
-    console.warn('Failed to capture screenshot (html2canvas may not be loaded):', error);
+    // Failed to capture screenshot
     return null;
   }
 }

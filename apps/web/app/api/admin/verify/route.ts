@@ -3,6 +3,8 @@ import { getCurrentUser } from '@/lib/auth-helpers';
 import { verifySiteAccess } from '@/lib/auth-helpers';
 import { getPool } from '@analytics/db';
 
+export const dynamic = 'force-dynamic';
+
 async function isAdmin(userId: string): Promise<boolean> {
   const pool = getPool();
   const result = await pool.query(`

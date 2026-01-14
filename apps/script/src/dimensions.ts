@@ -17,7 +17,7 @@ export function setUserDimension(name: string, value: string | number | boolean 
     localStorage.setItem('_aa_user_dims', JSON.stringify(dims));
   } catch (e) {
     // localStorage not available or quota exceeded
-    console.warn('Failed to set user dimension', e);
+    // Failed to set user dimension
   }
 }
 

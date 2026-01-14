@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { cookies } from 'next/headers';
 import { getUserSites } from '@/lib/auth-helpers';
 import { getCurrentUser } from '@/lib/auth-helpers';

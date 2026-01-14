@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { getPool } from '@analytics/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { nanoid } from 'nanoid';

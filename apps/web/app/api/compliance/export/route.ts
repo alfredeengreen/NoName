@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@analytics/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GDPR/CCPA Data Export
  * GET /api/compliance/export - Export all user data

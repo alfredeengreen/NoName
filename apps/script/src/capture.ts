@@ -424,7 +424,7 @@ function setupVideoTracking() {
       try {
         videoObserver.observe(document.body, { childList: true, subtree: true });
       } catch (e) {
-        console.warn('No Name Analytics: Failed to observe document.body for video tracking', e);
+        // Failed to observe document.body
       }
     }
   };
