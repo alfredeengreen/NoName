@@ -3,6 +3,8 @@ import { getPool } from '@analytics/db';
 import { verifySiteAccess, getCurrentUser } from '@/lib/auth-helpers';
 import { logUserAction } from '@/lib/security';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
