@@ -55,10 +55,6 @@ function OrgMembersContent() {
   const [inviteRole, setInviteRole] = useState('viewer');
 
   const fetchMembers = useCallback(async () => {
-    fetchMembers();
-  }, [orgId]);
-
-  const fetchMembers = async () => {
     try {
       const res = await fetch(`/api/orgs/${orgId}/members`);
       if (!res.ok) throw new Error('Failed to fetch members');
