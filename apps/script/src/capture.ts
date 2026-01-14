@@ -46,23 +46,10 @@ export const capture = {
         const label = getClickLabel(target);
         const elementId = getElementSelector(target);
         
-        debugLog('Click captured:', {
-          element: target.tagName,
-          elementId,
-          label,
-          hasElementId: !!elementId,
-        });
-        
         // Always send click event with elementId for insights/impact analysis
         // even if label is missing, as long as we have an elementId
         if (elementId) {
           const eventKey = label ? buildEventKey('click', label) : `click:${elementId}`;
-          
-          debugLog('Sending click event:', {
-            elementId,
-            label: label || elementId,
-            eventKey,
-          });
           
           // Send as named event with element metadata for impact analysis
           batch.sendEvent('click', {

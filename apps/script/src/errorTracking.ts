@@ -336,19 +336,19 @@ function setupConsoleErrorTracking() {
   console.error = function(...a: any[]) {
     addBreadcrumb({
       type: 'console',
-      message: args.map(a => String(a)).join(' '),
+      message: a.map(x => String(x)).join(' '),
       data: { level: 'error' },
     });
-    return originalConsoleError.apply(console, args);
+    return origErr.apply(console, a);
   };
   
   console.warn = function(...a: any[]) {
     addBreadcrumb({
       type: 'console',
-      message: args.map(a => String(a)).join(' '),
+      message: a.map(x => String(x)).join(' '),
       data: { level: 'warn' },
     });
-    return originalConsoleWarn.apply(console, args);
+    return origWarn.apply(console, a);
   };
 }
 
