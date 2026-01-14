@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@analytics/db';
-import { integrations } from '@analytics/db';
+import { getPool } from '@analytics/db';
 import { verifyOrgAccess } from '@/lib/auth-helpers';
-import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 /**
@@ -21,23 +19,14 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const db = getDb();
-    const orgIntegrations = await db
-      .select()
-      .from(integrations)
-      .where(eq(integrations.orgId, params.id));
+    const pool = getPool();
+    const result = await pool.query(
+      'SELECT id, type, name, enabled, created_at as "createdAt", updated_at as "updatedAt" FROM integrations WHERE org_id = $1',
+      [params.id]
+    );
 
     // Don't return sensitive config (e.g., API keys)
-    const safeIntegrations = orgIntegrations.map(i => ({
-      id: i.id,
-      type: i.type,
-      name: i.name,
-      enabled: i.enabled,
-      createdAt: i.createdAt,
-      updatedAt: i.updatedAt,
-    }));
-
-    return NextResponse.json(safeIntegrations);
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error('Error fetching integrations:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -61,20 +50,16 @@ export async function POST(
       return NextResponse.json({ error: 'type, name, and config are required' }, { status: 400 });
     }
 
-    const db = getDb();
-    const [created] = await db
-      .insert(integrations)
-      .values({
-        id: nanoid(),
-        orgId: params.id,
-        type,
-        name,
-        config,
-        enabled: true,
-      })
-      .returning();
+    const pool = getPool();
+    const id = nanoid();
+    const result = await pool.query(
+      `INSERT INTO integrations (id, org_id, type, name, config, enabled, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+       RETURNING id, org_id as "orgId", type, name, config, enabled, created_at as "createdAt", updated_at as "updatedAt"`,
+      [id, params.id, type, name, JSON.stringify(config), true]
+    );
 
-    return NextResponse.json(created, { status: 201 });
+    return NextResponse.json(result.rows[0], { status: 201 });
   } catch (error) {
     console.error('Error creating integration:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

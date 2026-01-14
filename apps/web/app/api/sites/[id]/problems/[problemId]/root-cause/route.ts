@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySiteAccess } from '@/lib/auth-helpers';
 import { getPool } from '@analytics/db';
-import { getRootCauseAnalysis } from '../../../../../../../../../../collector/src/root-cause';
 
 export async function GET(
   request: NextRequest,

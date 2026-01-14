@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@analytics/db';
-import { ipAllowlist } from '@analytics/db';
+import { getPool } from '@analytics/db';
 import { verifyOrgAccess } from '@/lib/auth-helpers';
-import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 /**
@@ -21,13 +19,13 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const db = getDb();
-    const entries = await db
-      .select()
-      .from(ipAllowlist)
-      .where(eq(ipAllowlist.orgId, params.id));
+    const pool = getPool();
+    const result = await pool.query(
+      'SELECT id, org_id as "orgId", cidr, description, enabled, created_at as "createdAt" FROM ip_allowlist WHERE org_id = $1',
+      [params.id]
+    );
 
-    return NextResponse.json(entries);
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error('Error fetching IP allowlist:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -56,19 +54,16 @@ export async function POST(
       return NextResponse.json({ error: 'Invalid CIDR format' }, { status: 400 });
     }
 
-    const db = getDb();
-    const [created] = await db
-      .insert(ipAllowlist)
-      .values({
-        id: nanoid(),
-        orgId: params.id,
-        cidr,
-        description: description || null,
-        enabled: enabled ?? true,
-      })
-      .returning();
+    const pool = getPool();
+    const id = nanoid();
+    const result = await pool.query(
+      `INSERT INTO ip_allowlist (id, org_id, cidr, description, enabled, created_at)
+       VALUES ($1, $2, $3, $4, $5, NOW())
+       RETURNING id, org_id as "orgId", cidr, description, enabled, created_at as "createdAt"`,
+      [id, params.id, cidr, description || null, enabled ?? true]
+    );
 
-    return NextResponse.json(created, { status: 201 });
+    return NextResponse.json(result.rows[0], { status: 201 });
   } catch (error) {
     console.error('Error creating IP allowlist entry:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
